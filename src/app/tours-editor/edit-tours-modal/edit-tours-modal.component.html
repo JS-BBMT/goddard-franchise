@@ -1,0 +1,460 @@
+<!--Editing Trigger-->
+<div appBsModal #TourModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"
+    [config]="{backdrop: 'static'}">
+    <div class="modal-dialog modal-dialog-centered  modal-lg">
+        <div class="modal-content">
+            <form #tourForm="ngForm" novalidate (ngSubmit)="saveTour()">
+                <div class="modal-header">
+                    <p class="h4 font-ramona text-uppercase text-secondary mb-0 py-3">
+                        <span>{{(tour?.id ? "Edit" : "Add a") + " Tour" | localize}}</span>
+                    </p>
+                    <div class="d-inline-flex p-2">
+                        <button type="button" class="close" [attr.aria-label]="l('Close')" (click)="close()">
+                            <i aria-hidden="true" class="ki ki-close"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-body px-20">
+
+                    <div class="row " #searchTourLeadWrapper *ngIf="!displayTourForm">
+                        <div class="col-12">
+                            <h5 class="text-primary font-ramona mb-0">
+                                {{"Search Lead Listings" | localize}}
+                            </h5>
+                        </div>
+                        <div class="col-12 gsi-autocomplete__wrapper position-realtive">
+                            <p-autoComplete #acInput [(ngModel)]="inputText" name="q" id="q" type="text"
+                                [suggestions]="leadListingsResults" (completeMethod)="searchLeads($event)"
+                                (onSelect)="selectLeadAndShowTourForm($event)" (onFocus)="onFocusAc(acInput)"
+                                inputStyleClass="gsi-autocomplete__input" panelStyleClass="gsi-autocomplete__panel"
+                                class="gsi-autocomplete" [minLength]="3"
+                                placeholder="Search by first or last name, email or phone number"
+                                showEmptyMessage="true" [emptyMessage]="l('No_Leads_Found_Message')">
+                                <!-- Headers -->
+                                <ng-template let-value pTemplate="header">
+                                    <span class="d-flex align-items-center text-center">
+                                        <span class="col-4 font-weight-bold">Last Name</span>
+                                        <span class="col-4 font-weight-bold">Email/Phone</span>
+                                        <span class="col-4 font-weight-bold">Create Date</span>
+                                    </span>
+                                </ng-template>
+                                <!-- Body Template  -->
+                                <ng-template let-value pTemplate="item">
+                                    <span class="d-flex align-items-center text-center">
+                                        <span class="col-4">{{value.lastName + ', ' + value.firstName}}</span>
+                                        <span class="col-4">{{value.emailAddress}} <br /> {{value.mobilePhone}}</span>
+                                        <span class="col-4">{{value.createdOn | date: dateFormat }}</span>
+                                    </span>
+                                </ng-template>
+                            </p-autoComplete>
+                            <span class="fa fa-search fa-lg"></span>
+                        </div>
+                        <div class="col-12">
+                            <span class="bg-white border-0 gsi-text-blue cursor-pointer" rol="button"
+                                (click)="openNewLeadModal()">
+                                <img _ngcontent-pys-c233=""
+                                    src="/assets/metronic/themes/theme7/images/icon-circle-right-blue.svg"
+                                    class="gsi-link-icon small mr-1">
+                                {{"Create a new lead" | localize}}
+                            </span>
+                        </div>
+                    </div>
+                    <!--Search Tour Lead-->
+
+                    <div class="w-100 d-flex flex-column">
+                        <div class="w-100 mb-3" *ngIf="displayTourForm" #tourFormWrapper>
+                            <span role="button" type="button" class="bg-white border-0 gsi-text-blue cursor-pointer"
+                                [attr.aria-label]="l('Back')" (click)="back()">
+                                <img src="/assets/metronic/themes/theme7/images/icon-circle-right-blue.svg"
+                                    class="gsi-link-icon small mr-2 gsi-flip-x"> {{"Back to Leads Search" | localize}}
+                            </span>
+                        </div>
+                        <div class="w-100 border border-light border-1 rounded p-10" *ngIf="displayTourForm">
+
+                            <div class="form-row">
+                                <div class="form-group col-12">
+                                    <label class="font-ramona font-weight-bolder text-uppercase text-primary"
+                                        for="first-name">
+                                        {{"First Name" | localize}}
+                                    </label>
+                                    <input class="form-control form-control-solid" type="text" id="first-name"
+                                        name="first-name" #leadFirstName="ngModel" disabled [ngModel]="lead?.firstName"
+                                        (ngModelChange)="lead ? lead.firstName=$event : null">
+                                    <validation-messages [formCtrl]="leadFirstName"></validation-messages>
+                                </div>
+                            </div>
+                            <!--First Name-->
+
+                            <div class="form-row">
+                                <div class="form-group col-12">
+                                    <label class="font-ramona font-weight-bolder text-uppercase text-primary"
+                                        for="last-name">
+                                        {{"Last Name" | localize}}
+                                    </label>
+                                    <input class="form-control form-control-solid" type="text" id="last-name"
+                                        name="last-name" #leadLastName="ngModel" disabled [ngModel]="lead?.lastName"
+                                        (ngModelChange)="lead ? lead.lastName=$event : null">
+                                    <validation-messages [formCtrl]="leadLastName"></validation-messages>
+                                </div>
+                            </div>
+                            <!--Last Name-->
+
+                            <div class="form-row">
+                                <div class="form-group col-12">
+                                    <label class="font-ramona font-weight-bolder text-uppercase text-primary"
+                                        for="email">
+                                        {{"Email Address" | localize}}
+                                    </label>
+                                    <input class="form-control form-control-solid" type="email" id="email" name="email"
+                                        #leadEmailAddress="ngModel" disabled [ngModel]="lead?.emailAddress"
+                                        (ngModelChange)="lead ? lead.emailAddress=$event : null">
+                                    <validation-messages [formCtrl]="leadEmailAddress"></validation-messages>
+                                </div>
+                            </div>
+                            <!--Email-->
+
+                            <div class="form-row">
+                                <div class="form-group col-12">
+                                    <label class="font-ramona font-weight-bolder text-uppercase text-primary"
+                                        for="phone">
+                                        {{"Phone Number" | localize}}
+                                    </label>
+                                    <input class="form-control form-control-solid" type="phone" id="phone" name="phone"
+                                        #leadMobilePhone="ngModel" disabled [ngModel]="lead?.mobilePhone"
+                                        (ngModelChange)="lead ? lead.mobilePhone=$event : null">
+                                    <validation-messages [formCtrl]="leadMobilePhone"></validation-messages>
+                                </div>
+                            </div>
+                            <!--Phone-->
+
+                            <div *ngFor="let item of lead?.schoolChildLeads">
+                                <div class="form-row">
+                                    <div class="form-group col-12">
+                                        <label class="font-ramona font-weight-bolder text-uppercase text-primary"
+                                            for="childs-name-{{item.firstName}}">
+                                            {{"Child's Name" | localize}}
+                                        </label>
+                                        <input class="form-control form-control-solid" type="childs-name"
+                                            id="childs-name-{{item.firstName}}" name="childs-name"
+                                            value="{{item?.firstName}}" disabled>
+                                    </div>
+                                </div>
+                                <!--child's name-->
+
+                                <div class="form-row">
+                                    <div class="form-group col-12">
+                                        <label class="font-ramona font-weight-bolder text-uppercase text-primary"
+                                            for="childs-age-{{item.firstName}}">
+                                            {{"Child's Age" | localize}}
+                                        </label>
+                                        <input class="form-control form-control-solid" type="childs-age"
+                                            id="childs-age-{{item.firstName}}" name="childs-age"
+                                            value="{{childAge(item.dateOfBirth)}}" disabled>
+                                    </div>
+                                </div>
+                                <!--child's age-->
+                            </div>
+                            <!--children-->
+
+                            <div class="form-row">
+                                <div class="form-group col-12">
+                                    <label class="font-ramona font-weight-bolder text-uppercase text-primary"
+                                        for="special-requests">
+                                        {{"Special Requests" | localize}}
+                                    </label>
+                                    <textarea class="form-control form-control-solid" type="special-requests"
+                                        id="special-requests" name="special-requests" #tourQuestions="ngModel" rows="3"
+                                        disabled [ngModel]="lead?.tourQuestions"
+                                        (ngModelChange)="lead ? lead.tourQuestions=$event : null">
+                                </textarea>
+                                    <validation-messages [formCtrl]="tourQuestions"></validation-messages>
+                                </div>
+                            </div>
+                            <!--Lead's Special Request-->
+
+                            <div class="form-row">
+                                <div class="form-group col-12">
+                                    <label class="font-ramona font-weight-bolder text-uppercase text-primary"
+                                        for="programs-of-interest">
+                                        {{"Programs of Interest" | localize}}
+                                    </label>
+                                    <div class="bg-light rounded w-100 d-flex flex-wrap p-3">
+                                        <label class="checkbox checkbox-lg col-3 mb-3"
+                                            *ngFor="let option of leadProgramOfInterestOptions">
+                                            <input type="checkbox" name="programsOfInterest-{{option.name}}"
+                                                [checked]="isProgramOfInterestSelected(option.name)"
+                                                (change)="onProgramOfInterestChanged($event)" [value]="option.name"
+                                                disabled="disabled" />
+                                            <span></span>{{option.displayName | localize}}
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--Program of Interest-->
+
+                            <div class="form-row">
+                                <div class="form-group col-12">
+                                    <label class="font-ramona font-weight-bolder text-uppercase text-primary"
+                                        for="special-requests">
+                                        {{"Days of Interest" | localize}}
+                                    </label>
+                                    <div
+                                        class="bg-light rounded w-100 d-flex flex-wrap justify-content-between p-3 px-2">
+                                        <label class="checkbox checkbox-lg  pr-0 mb-3" for="daysOfInterest-mon">
+                                            <input type="checkbox" name="daysOfInterest-mon" id="daysOfInterest-mon"
+                                                disabled>
+                                            <span></span> {{"Mon" | localize}}
+                                        </label>
+                                        <label class="checkbox checkbox-lg  pr-0 mb-3" for="daysOfInterest-tue">
+                                            <input type="checkbox" name="daysOfInterest-tue" id="daysOfInterest-tue"
+                                                disabled>
+                                            <span></span> {{"Tue" | localize}}
+                                        </label>
+                                        <label class="checkbox checkbox-lg pr-0 mb-3" for="daysOfInterest-wed">
+                                            <input type="checkbox" name="daysOfInterest-wed" id="daysOfInterest-wed"
+                                                disabled>
+                                            <span></span> {{"Wed" | localize}}
+                                        </label>
+                                        <label class="checkbox checkbox-lg  pr-0 mb-3" for="daysOfInterest-thu">
+                                            <input type="checkbox" name="daysOfInterest-thu" id="daysOfInterest-thu"
+                                                disabled>
+                                            <span></span> {{"Thu" | localize}}
+                                        </label>
+                                        <label class="checkbox checkbox-lg  pr-0 mb-3" for="daysOfInterest-fri">
+                                            <input type="checkbox" name="daysOfInterest-fri" id="daysOfInterest-fri"
+                                                disabled>
+                                            <span></span> {{"Fri" | localize}}
+                                        </label>
+                                        <label class="checkbox checkbox-lg  pr-0 mb-3" for="daysOfInterest-all">
+                                            <input type="checkbox" name="daysOfInterest-all" id="daysOfInterest-all"
+                                                disabled>
+                                            <span></span> {{"All Week" | localize}}
+                                        </label>
+                                        <label class="checkbox checkbox-lg  pr-0 mb-3" for="daysOfInterest-tbd">
+                                            <input type="checkbox" name="daysOfInterest-tbd" id="daysOfInterest-tbd"
+                                                disabled>
+                                            <span></span> {{"TBD" | localize}}
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--Days of Interest-->
+
+                            <div class="form-row">
+                                <div class="form-group col-12">
+                                    <label class="font-ramona font-weight-bolder text-uppercase text-primary"
+                                        for="special-requests">
+                                        {{"Level of Interest (Follow Up)" | localize}}
+                                    </label>
+
+                                    <div
+                                        class="bg-light rounded w-100 d-flex flex-wrap justify-content-center p-3 px-2">
+                                        <div class="radio-inline">
+                                            <label *ngFor="let item of followUpTimeFrames" class="radio text-nowrap col"
+                                                for="followUpTimeFrame-{{item.value}}">
+                                                <input type="radio" name="followUpTimeFrame-{{item.value}}"
+                                                    id="followUpTimeFrame-{{item.value}}" value="{{item.value}}"
+                                                    [checked]="tour?.followUpTimeFrame === item.value"
+                                                    [ngModel]="tour?.followUpTimeFrame"
+                                                    (ngModelChange)="tour ? tour.followUpTimeFrame=$event : null">
+                                                <span></span> {{ item.text | localize}}
+                                            </label>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                            <!-- Follow Up -->
+
+                            <div class="form-row ">
+
+                                <div class="form-group col-12 col-md-7">
+                                    <label
+                                        class="font-ramona font-weight-bolder text-uppercase text-primary gsi-required-field">
+                                        {{"Tour Type" | localize}}
+                                    </label>
+                                    <div class="radio-inline w-100">
+                                        <label class="radio w-100 " *ngFor="let item of tourTypes"
+                                            for="tour-type-{{item.text}}">
+                                            <input type="radio" name="tour-type" id="tour-type-{{item.text}}"
+                                                #tourType="ngModel" value="{{item.value}}"
+                                                [checked]="tour?.type === item.value" [ngModel]="tour?.type"
+                                                (ngModelChange)="tour ? tour.type=$event : null" required>
+                                            <span></span>
+                                            <div class="d-flex align-items-center">
+                                                <div>
+                                                    <img src="{{item.imgPath}}" />
+                                                </div>
+                                                <div class="pl-3">
+                                                    {{ item.text | localize}}
+                                                </div>
+                                            </div>
+                                            <validation-messages [formCtrl]="tourType"></validation-messages>
+                                        </label>
+                                    </div>
+
+                                </div>
+                                <!-- Tour Types -->
+
+                                <div class="form-group x col-12 col-md-5">
+                                    <label
+                                        class="font-ramona font-weight-bolder text-uppercase text-primary gsi-required-field">
+                                        {{"Tour Status" | localize}}
+                                    </label>
+                                    <div class="w-100 bg-light rounded d-flex justify-content-center py-4">
+                                        <div class="radio-inline">
+                                            <label class="radio text-nowrap col" *ngFor="let item of tourStatus"
+                                                for="tour-type-{{item.text}}">
+                                                <input type="radio" name="tour-type-2" id="tour-type-{{item.text}}"
+                                                    #status="ngModel" value="{{item.value}}"
+                                                    [checked]="tour?.status === item.value" [ngModel]="tour?.status"
+                                                    (ngModelChange)="tour ? tour.status=$event : null" required>
+                                                <span></span> {{item.text | localize}}
+                                                <validation-messages [formCtrl]="status"></validation-messages>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Tour Status -->
+
+                            </div>
+
+                            <div class="form-row w-100 justify-content-between">
+                                <div class="form-group col-5 mb-0">
+                                    <label class="font-ramona font-weight-bolder text-uppercase text-primary mb-0"
+                                        [ngClass]="{'gsi-required-field': tour?.type === inPersonTourType}"
+                                        for="tour-date">
+                                        {{"Date" | localize}}
+                                    </label>
+                                    <div class="w-100 d-flex align-items-center pt-8">
+                                        <div class="pr-2">
+                                            <img src="/assets/common/images/icons/gsi_calendar.png" />
+                                        </div>
+                                        <div>
+                                            <input type="text" class="form-control form-control-solid" id="tour-date"
+                                                name="tour-date" placeholder="" bsDatepicker
+                                                #scheduledDateTime="ngModel" placeholder="" [required]="true"
+                                                [ngModel]="tour?.scheduledDateTime | dateFormat: 'short'"
+                                                (ngModelChange)="tour ? tour.scheduledDateTime=$event : null"
+                                                [datesEnabled]="enabledDates"
+                                                [required]="tour?.type === inPersonTourType" />
+                                            <validation-messages [formCtrl]="scheduledDateTime"></validation-messages>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group col-6 mb-0">
+                                    <label class="font-ramona font-weight-bolder text-uppercase text-primary mb-0"
+                                        [ngClass]="{'gsi-required-field': tour?.type === inPersonTourType}"
+                                        for="startingTime">
+                                        {{"Time" | localize}}
+                                    </label>
+                                    <div class="d-flex align-items-center">
+                                        <div class="pr-2">
+                                            <img src="/assets/common/images/icons/gsi_clock.png" />
+                                        </div>
+                                        <div>
+                                            <timepicker #startingTimeInput="ngModel" class="gsi-timepicker"
+                                                id="startingTime" name="startingTime" [ngModel]="startingTime"
+                                                (ngModelChange)="startingTime ? startingTime=$event : null"
+                                                [required]="tour?.type === inPersonTourType">
+                                            </timepicker>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--Tour scheduled date-time-->
+
+                            <div class="form-row justify-content-between">
+                                <div class="form-group col-5">
+                                    <label class="font-ramona font-weight-bolder text-uppercase text-primary mt-3"
+                                        [ngClass]="{'gsi-required-field': tour?.type === inPersonTourType}">
+                                        {{"Tour Guide" | localize}}
+                                    </label>
+                                    <select class="form-control" name="guide-name" [ngModel]="tour?.guide?.name"
+                                        (ngModelChange)="tour?.guide ? tour.guide.name=$event : null"
+                                        [required]="tour?.type === inPersonTourType" #tourGuide="ngModel"
+                                        (change)="onTourGuideChanged($event.target.value)">
+                                        <option *ngFor="let item of guides" value="{{item.name}}"
+                                            [selected]="tour?.guide?.name === item.name">
+                                            {{item.name}}
+                                        </option>
+                                    </select>
+                                    <validation-messages [formCtrl]="tourGuide"></validation-messages>
+                                </div>
+                                <!--Tour Guides-->
+
+                                <div class="form-group col-6">
+                                    <label class="font-ramona font-weight-bolder text-uppercase text-primary mt-3">
+                                        {{"Classroom" | localize}}
+                                    </label>
+                                    <input type="text" class=" form-control form-control-solid" name="classRoom"
+                                        #classRoom="ngModel" placeholder="Enter Classroom" [ngModel]="tour?.classRoom"
+                                        (ngModelChange)="tour ? tour.classRoom=$event : null" />
+                                    <validation-messages [formCtrl]="classRoom"></validation-messages>
+                                </div>
+                                <!--Classroom-->
+                            </div>
+                            <!--Tour Guides & Classroom-->
+
+                            <div class="form-row">
+                                <div class="form-group col-12">
+                                    <label class="font-ramona font-weight-bolder text-uppercase text-primary mt-3">
+                                        {{"Notes From Tour" | localize}}
+                                    </label>
+                                    <textarea class="form-control form-control-solid" rows="4" id="notes" name="notes"
+                                        #notes="ngModel" [ngModel]="tour?.notes"
+                                        (ngModelChange)="tour ? tour.notes=$event : null">
+                            </textarea>
+                                    <validation-messages [formCtrl]="notes"></validation-messages>
+                                </div>
+                            </div>
+                            <!--Notes From Tour-->
+                        </div>
+                    </div>
+                    <!--Form-->
+
+                </div>
+                <div class="modal-footer d-flex justify-content-center">
+                    <button type="button" class="btn btn-light-primary" (click)="showDiscardChangesModal()">
+                        {{"Cancel" | localize}}
+                    </button>
+                    <div *ngIf="displayTourForm">
+                        <button type="button" class="btn btn-primary" (click)="saveTour()"
+                            [disabled]="!tourForm.form.valid">
+                            {{"Save" | localize}}
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div appBsModal #discardChangesModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"
+    [config]="{backdrop: 'static'}">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <span>{{"DiscardChanges" | localize}}</span>
+                </h5>
+                <button type="button" class="close" [attr.aria-label]="l('Close')" (click)="closeDiscardChangesModal()">
+                    <i aria-hidden="true" class="ki ki-close"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div>{{"DiscardChangesConfirmation" | localize}}</div>
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <button type="button" class="btn btn-light-primary font-weight-bold"
+                    (click)="closeDiscardChangesModal()">{{"Cancel" | localize}}
+                </button>
+                <button type="button" class="btn btn-primary font-weight-bold" (click)="discardChanges()">
+                    {{"Ok" | localize}}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Discard Modal -->

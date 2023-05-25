@@ -1,0 +1,85 @@
+<div class="gsi-edit-trigger border-danger d-none" #editHomeTeaserTrigger>
+    <button class="btn btn-danger py-3 px-4" (click)="openModal()">
+        <span class="d-flex">
+            <goddard-icons [iconClass]="['mr-2']" [iconName]="['Edit-White']" [iconSize]="[16]">
+            </goddard-icons>
+            <span>
+                {{"Edit" | localize}}
+            </span>
+        </span>
+    </button>
+</div>
+<!--Editing Trigger-->
+
+<!--Editing Trigger-->
+<div appBsModal #editTeaserModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"
+    [config]="{backdrop: 'static'}">
+    <div class="modal-dialog modal-dialog-centered  modal-lg">
+        <div class="modal-content">
+            <form #teaserForm="ngForm" novalidate (ngSubmit)="saveTeaser()">
+                <div class="modal-header">
+                    <p class="h4 font-ramona text-uppercase text-secondary mb-0 py-3">
+                        <span>{{"Edit Teaser Content" | localize}}</span>
+                    </p>
+                    <button type="button" class="close" [attr.aria-label]="l('Close')" (click)="close()">
+                        <i aria-hidden="true" class="ki ki-close"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-row justify-content-center py-4">
+                        <div class="form-group col-12">
+                            <label class="font-ramona font-weight-bolder text-uppercase text-primary">
+                                {{"Description" | localize}}
+                            </label>
+                            <small>
+                                {{maxDescriptionLength - textDto?.text?.length}} {{' Characters remaining' | localize}}
+                            </small>
+                            <textarea rows="5" id="text" name="text" class="form-control form-control-solid"
+                                [innerHtml]="textDto?.text" #text="ngModel" maxlength="{{maxDescriptionLength}}"
+                                validateNoHtml [ngModel]="textDto?.text"
+                                (ngModelChange)="textDto ? textDto.text=$event : null">
+                            </textarea>
+                            <validation-messages [formCtrl]="text"></validation-messages>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer d-flex justify-content-center">
+                    <button type="button" class="btn btn-light-primary" (click)="showDiscardChangesModal()">
+                        {{"Cancel" | localize}}
+                    </button>
+                    <app-save-button text="save & publish" (onClickEvent)="saveTeaser()" #savebutton
+                        [disabled]="!teaserForm.form.valid || !teaserForm.form.dirty">
+                    </app-save-button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div appBsModal #discardChangesModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"
+    [config]="{backdrop: 'static'}">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <span>{{"DiscardChanges" | localize}}</span>
+                </h5>
+                <button type="button" class="close" [attr.aria-label]="l('Close')" (click)="closeDiscardChangesModal()">
+                    <i aria-hidden="true" class="ki ki-close"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div>{{"DiscardChangesConfirmation" | localize}}</div>
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <button type="button" class="btn btn-light-primary font-weight-bold"
+                    (click)="closeDiscardChangesModal()">{{"Cancel" | localize}}
+                </button>
+                <button type="button" class="btn btn-primary font-weight-bold" (click)="discardChanges()">
+                    {{"Ok" | localize}}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Discard Modal -->

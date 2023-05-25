@@ -1,0 +1,72 @@
+<div appBsModal #sortFacultyMemberModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"
+    [config]="{backdrop: 'static'}">
+    <div class="modal-dialog modal-dialog-centered  modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <p class="h4 font-ramona text-uppercase text-secondary mb-0 py-3">
+                    <span>{{"Sort Faculty Bios" | localize}}</span>
+                </p>
+                <button type="button" class="close" [attr.aria-label]="l('Close')" (click)="showDiscardChangesModal()">
+                    <i aria-hidden="true" class="ki ki-close"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p-table class="gsi-table gsi-table_sortable" [value]="_facultyMembers" [reorderableColumns]="true"
+                    (onRowReorder)="onReorderFacultyMember($event)">
+                    <ng-template pTemplate="body" let-facultyBio let-index="rowIndex">
+                        <tr [pReorderableRow]="index">
+                            <td class="text-center">
+                                <img class="gsi-list-drag-icon"
+                                    src="/assets/metronic/themes/theme7/images/gsi_drag_icon.svg" pReorderableRowHandle>
+                            </td>
+                            <td class="w-100">
+                                <span class="p-column-title">{{"Name / Position" | localize}}</span>
+                                {{facultyBio.givenName}}
+                                <br>
+                                <small>
+                                    {{facultyBio.jobTitle}}
+                                </small>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <button type="button" class="btn btn-light-primary" [attr.aria-label]="l('Close')"
+                    (click)="showDiscardChangesModal()">
+                    {{"Cancel" | localize}}
+                </button>
+                <app-save-button text="Save & Publish" (onClickEvent)="saveFacultyMembers()" #saveButton>
+                </app-save-button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Edit Faculty Member Modal -->
+
+<div appBsModal #discardChangesModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"
+    [config]="{backdrop: 'static'}">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <span>{{"DiscardChanges" | localize}}</span>
+                </h5>
+                <button type="button" class="close" [attr.aria-label]="l('Close')" (click)="closeDiscardChangesModal()">
+                    <i aria-hidden="true" class="ki ki-close"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div>{{"DiscardChangesConfirmation" | localize}}</div>
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <button type="button" class="btn btn-light-primary font-weight-bold"
+                    (click)="closeDiscardChangesModal()">{{"Cancel" | localize}}</button>
+                <button type="button" class="btn btn-primary font-weight-bold" (click)="discardChanges()">
+                    {{"Ok" | localize}}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Discard Modal -->

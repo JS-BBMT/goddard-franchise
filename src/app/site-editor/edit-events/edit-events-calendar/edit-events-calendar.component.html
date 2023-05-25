@@ -1,0 +1,66 @@
+<div [@routerTransition]>
+    <div class="container-fluid py-5">
+        <div class="row justify-content-between align-item-center">
+            <div class="col-6">
+                <h4 class="font-weight-bolder font-ramona text-primary py-2 mb-0">
+                    {{"Events Calendar" | localize}}
+                </h4>
+
+            </div>
+            <div class="col-6 text-right">
+                <button class="btn btn-primary" (click)="openModal(undefined)">
+                    <span class="d-flex align-items-center">
+                        <goddard-icons [iconClass]="['gsi-icon_white mr-2']" [iconSize]="[20]"
+                            [iconName]="['Outline-Plus']"></goddard-icons>
+                        <span>{{"Add" | localize}}</span>
+                    </span>
+                </button>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <full-calendar #calendar class="gsi-school-event-calendar" [options]="GsiCalendarOptions">
+                </full-calendar>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div appBsModal #deleteEventSeriesModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"
+    [config]="{backdrop: 'static'}">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header d-flex justify-content-end border-0 pb-0">
+                <button type="button" class="close" (click)="closeDeleteModal()"><i aria-hidden="true"
+                        class="ki ki-close"></i></button>
+            </div>
+            <div class="modal-body pt-0">
+                <div class="swal2-icon swal2-warning swal2-icon-show" style="display: flex;">
+                    <div class="swal2-icon-content">!</div>
+                </div>
+                <h2 class="swal2-title text-warning" id="swal2-title" style="display: flex;">
+                    {{"WhatWouldYouLikeToDo" | localize}}
+                </h2>
+                <p class="text-center">
+                    {{"DeleteEventSeriesMessage" | localize}}
+                </p>
+            </div>
+            <div class="d-flex pb-5 w-100 justify-content-center">
+                <button type="button" class="btn btn-light-primary" (click)="delete(false)">
+                    {{"SingleEvent" | localize}}
+                </button>
+                <button type="button" class="btn btn-primary" (click)="delete(true)">
+                    {{"ThisAndFutureEvents" | localize}}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Delete Modal -->
+
+<edit-event-modal #EventModal (save)="onSaveEvent($event)"></edit-event-modal>
+<!--Edit Modal -->
+
+<event-template-modal #EventTemplateModal (save)="onSaveEventTemplate($event)"></event-template-modal>
+<!--Event Template Modal -->

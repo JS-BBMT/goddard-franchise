@@ -1,0 +1,8 @@
+<p>
+    <i class="text-warning fa fa-exclamation-triangle"></i>
+    {{l(linkText) | split: '{0}' : 0 }}
+    <a class="font-weight-bolder" [href]="'mailto:'+ mailto + '?subject=' + requestSubject">
+        {{l('ClickHere')}}
+    </a>
+    {{l(linkText) | split: '{0}' : 1 }}
+</p>

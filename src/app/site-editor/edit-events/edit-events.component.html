@@ -1,0 +1,32 @@
+<div [@routerTransition]>
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-12 mb-5">
+                <div class="card ">
+                    <div class="card-header">
+                        <h3 class="font-weight-bolder font-ramona text-secondary py-2 mb-0">
+                            {{"Edit School Events" | localize}}
+                        </h3>
+                    </div>
+                    <div class="card-body" >
+
+                        <div class="wizard nav nav-pills" >
+                            <li class="nav-item">
+                                <a routerLink="/app/site-editor/edit-events/calendar" class="nav-link" routerLinkActive="active">
+                                    {{"Event Calendar" | localize}}
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a routerLink="/app/site-editor/edit-events/templates" class="nav-link" routerLinkActive="active">
+                                    {{"Templates" | localize}}
+                                </a>
+                            </li>
+
+                          </div>
+
+                          <router-outlet></router-outlet>
+                    </div>
+                </div>
+        </div>
+    </div>
+ </div>

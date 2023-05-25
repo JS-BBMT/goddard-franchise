@@ -1,0 +1,145 @@
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="row align-items-center py-4">
+                        <div class="col-6">
+                            <h3 class="font-weight-bolder font-ramona text-secondary py-2 mb-0">
+                                {{"Manage Tours" | localize}}
+                            </h3>
+                        </div>
+                        <div class="col-6 text-right">
+                            <button class="btn btn-primary" (click)="openModal(undefined)">
+                                <span class="d-flex align-items-center">
+                                    <goddard-icons [iconClass]="['gsi-icon_white mr-2']" [iconSize]="[20]"
+                                        [iconName]="['Outline-Plus']">
+                                    </goddard-icons>
+                                    <span>{{"Add" | localize}}</span>
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="card-body pt-3">
+                    <h6 class="py-4 font-weight-bolder">{{"Scheduled Tours" | localize}}</h6>
+                    <div class="p-3 border border-light rounded gsi-table-margin-fix-p3" *ngIf="tours">
+                        <p-table #dataTable class="gsi-table gsi-table--fixed gsi-table-tours gsi-ta" [value]="tours">
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th pSortableColumn="scheduledDateTime">
+                                        {{"Date & Time" | localize }}
+                                        <p-sortIcon field="scheduledDateTime"></p-sortIcon>
+                                    </th>
+                                    <th pSortableColumn="type">
+                                        {{"Tour Type" | localize }}
+                                        <p-sortIcon field="type"></p-sortIcon>
+                                    </th>
+                                    <th pSortableColumn="lead.firstName">
+                                        {{"First Name" | localize }}
+                                        <p-sortIcon field="lead.firstName"></p-sortIcon>
+                                    </th>
+                                    <th pSortableColumn="lead.lastName">
+                                        {{"Last Name" | localize }}
+                                        <p-sortIcon field="lead.lastName"></p-sortIcon>
+                                    </th>
+                                    <th>
+                                        {{"Child Name" |localize }}
+                                    </th>
+                                    <th>
+                                        {{"Child Age" | localize }}
+                                    </th>
+                                    <th pSortableColumn="status">
+                                        {{"Status" | localize }}
+                                        <p-sortIcon field="status"></p-sortIcon>
+                                    </th>
+                                    <th pSortableColumn="guide.name">
+                                        {{"Tour Guide" | localize }}
+                                        <p-sortIcon field="guide.name"></p-sortIcon>
+                                    </th>
+                                    <th class="text-right">
+                                        <button class="bg-white border-0 text-primary lead"
+                                            (click)="openFilterModal()">
+                                            <i class="la la-filter" *ngIf="filtersAreDefault"></i>
+                                            <i class="fa fa-filter" *ngIf="!filtersAreDefault"></i>
+                                        </button>
+                                        <span type="button" class=" border-0 gsi-text-blue small" *ngIf="!filtersAreDefault" (click)="loadScheduledTours()">
+                                            {{"Clear Filters" | localize}}
+                                        </span>
+                                    </th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-tour>
+                                <tr [ngClass]="{'gsi-new-tour' : isNewTour(tour.createdDateTime)}">
+                                    <td>
+                                        <span class="p-column-title"> {{l('scheduledDateTime')}}</span>
+                                        {{ getTourDateTime(tour.scheduledDateTime) }}
+                                    </td>
+                                    <td>
+                                        <span class="p-column-title">{{"tourType" | localize}}</span>
+                                        {{ getTourType(tour.type)}}
+                                    </td>
+                                    <td>
+                                        <span class="p-column-title"> {{"firstName" | localize }}</span>
+                                        {{tour.lead.firstName}}
+                                    </td>
+                                    <td>
+                                        <span class="p-column-title"> {{"lastName" | localize }}</span>
+                                        {{tour.lead.lastName}}
+                                    </td>
+                                    <td [innerHtml]="childrenNames(tour)">
+                                        <span class="p-column-title"> {{"childName" | localize }}</span>
+                                    </td>
+                                    <td [innerHtml]="childrenAges(tour)">
+                                        <span class="p-column-title">{{"childAge" | localize }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="p-column-title">{{"status" | localize }}</span>
+                                        {{ getTourStatus(tour.status)}}
+                                    </td>
+                                    <td>
+                                        <span class="p-column-title"> {{"tourGuide" | localize }}</span>
+                                        {{tour?.guide?.name}}
+                                    </td>
+                                    <td class="text-right">
+                                        <button class="btn btn-sm btn-primary" (click)="openModal(tour.id)">
+                                            <goddard-icons [iconClass]="['gsi-icon_white']" [iconSize]="[20]"
+                                                [iconName]="['Outline-Pencil']">
+                                            </goddard-icons>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                        <p class="lead text-muted text-center py-5" *ngIf="tours.length == 0 && !filtersAreDefault">
+                            {{"No results match your search criteria" | localize}}
+                            <br>
+                            <span type="button" class=" border-0 gsi-text-blue small" (click)="loadScheduledTours()">
+                                {{"Clear Filters" | localize}}
+                            </span>
+                        </p>
+                    </div>
+                    <div class="row justify-content-center g-0 py-3">
+                        <div class="col-6 d-flex align-items-center">
+                            <span class="gsi-table-tours_new-tour-info mr-2"></span>
+                            <span>{{"New Tour" | localize}}</span>
+                        </div>
+                        <div class="col-6 d-flex justify-content-end">
+                            <a class="bg-white border-0 gsi-text-blue d-flex align-items-center"
+                                [routerLink]="['/app/tours-editor/edit-completed-tours']">
+                                <img class="gsi-link-icon small mr-2"
+                                    src="/assets/metronic/themes/theme7/images/icon-circle-right-blue.svg">
+                                {{"Completed Tours" | localize}}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+  <edit-tours-modal #editToursModal (save)="onSaveTour($event)" (createLead)="openNewLeadModal()"></edit-tours-modal>
+  <new-lead-modal #newLeadModal  (back)="openModal(undefined)"></new-lead-modal>
+  <filter-tours-modal #filterToursModal ></filter-tours-modal>
